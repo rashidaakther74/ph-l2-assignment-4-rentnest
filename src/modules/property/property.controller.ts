@@ -19,14 +19,51 @@ const createProperty = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+const getAllProperties = catchAsync(async (req: Request, res: Response) => {
+    const result = await propertyService.getAllPropertiesFromDB();
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: "Properties retrieved successfully",
+        data: result,
+    });
+});
+
+const getSingleProperty = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    const result = await propertyService.getSinglePropertyFromDB(id as string);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: "Property retrieved successfully",
+        data: result,
+    });
+});
+
+const getAllPropertiesForAdmin = catchAsync(
+    async (req: Request, res: Response) => {
+        const result = await propertyService.getAllPropertiesForAdminFromDB();
+
+        sendResponse(res, {
+            success: true,
+            statusCode: 200,
+            message: "Properties retrieved successfully",
+            data: result,
+        });
+    }
+);
+
 const updateProperty = catchAsync(async (req: Request, res: Response) => {
-    const landlordId = req.user!.id;
+
     const { id } = req.params;
 
     const result = await propertyService.updatePropertyIntoDB(
         id as string,
         req.body,
-        landlordId
+      
     );
 
     sendResponse(res, {
@@ -37,7 +74,24 @@ const updateProperty = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+const deleteProperty = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    const result = await propertyService.deletePropertyIntoDB(id as string);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: "Property deleted successfully",
+        data: result,
+    });
+});
+
 export const propertyController = {
     createProperty,
-    updateProperty
+    getAllProperties,
+    getSingleProperty,
+    updateProperty,
+    deleteProperty,
+    getAllPropertiesForAdmin
 };

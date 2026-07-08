@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "../../lib/prisma";
 import config from "../../config";
-import { IUserRegister } from "./user.interface";
+import { IUpdateUserStatus, IUserRegister } from "./user.interface";
 
 
 const registerUserIntoDB = async (payload: IUserRegister) => {
@@ -59,8 +59,39 @@ const getMeFromDB = async (userId: string) => {
     return user;
 };
 
+const getAllUsersFromDB = async () => {
+    const result = await prisma.user.findMany({
+        omit: {
+            password: true,
+        },
+    });
+
+    return result;
+};
+
+const updateUserStatusIntoDB = async (
+    id: string,
+    payload: IUpdateUserStatus
+) => {
+    const result = await prisma.user.update({
+        where: {
+            id,
+        },
+        data: {
+            status: payload.status,
+        },
+        omit: {
+            password: true,
+        },
+    });
+
+    return result;
+};
+
 
 export const userService = {
     registerUserIntoDB,
-    getMeFromDB
+    getMeFromDB,
+    getAllUsersFromDB,
+    updateUserStatusIntoDB
 };

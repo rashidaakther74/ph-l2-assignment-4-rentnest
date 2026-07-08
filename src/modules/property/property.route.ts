@@ -11,10 +11,32 @@ router.post(
     propertyController.createProperty
 );
 
+router.get(
+    "/properties",
+    propertyController.getAllProperties
+);
+
+router.get(
+    "/properties/:id",
+    propertyController.getSingleProperty
+);
+
+router.get(
+    "/admin/properties",
+    auth(Role.ADMIN),
+    propertyController.getAllPropertiesForAdmin
+);
+
 router.put(
     "/landlord/properties/:id",
     auth(Role.LANDLORD),
     propertyController.updateProperty
+);
+
+router.delete(
+    "/landlord/properties/:id",
+    auth(Role.LANDLORD),
+    propertyController.deleteProperty
 );
 
 export const propertyRoutes = router;

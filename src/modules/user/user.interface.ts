@@ -4,3 +4,7 @@ export interface IUserRegister {
     password: string;
     role: "TENANT" | "LANDLORD";
 }
+
+export interface IUpdateUserStatus {
+    status: "ACTIVE" | "BANNED";
+}
