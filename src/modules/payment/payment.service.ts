@@ -2,7 +2,7 @@ import config from "../../config";
 import { prisma } from "../../lib/prisma";
 
 import { PaymentProvider } from "../../../prisma/generated/prisma/enums";
-import { ICreatePayment } from "./payment.interface";
+import { IConfirmPayment, ICreatePayment } from "./payment.interface";
 import Stripe from "stripe";
 import { stripe } from "../../lib/stripe";
 
@@ -62,6 +62,62 @@ const createPaymentIntoDB = async (
     };
 };
 
+const confirmPaymentIntoDB = async (payload: IConfirmPayment) => {
+    console.log("Payload:", payload);
+    console.log("Transaction:", payload.transactionId);
+    const result = await prisma.payment.update({
+        where: {
+            transactionId: payload.transactionId,
+        },
+        data: {
+            status: "COMPLETED",
+            paidAt: new Date(),
+        },
+    });
+
+    return result;
+};
+
+const getMyPaymentsFromDB = async (tenantId: string) => {
+    const result = await prisma.payment.findMany({
+        where: {
+            rentalRequest: {
+                tenantId,
+            },
+        },
+        include: {
+            rentalRequest: true,
+        },
+        orderBy: {
+            createdAt: "desc",
+        },
+    });
+
+    return result;
+};
+
+const getSinglePaymentFromDB = async (
+    paymentId: string,
+    tenantId: string
+) => {
+    const result = await prisma.payment.findFirstOrThrow({
+        where: {
+            id: paymentId,
+            rentalRequest: {
+                tenantId,
+            },
+        },
+        include: {
+            rentalRequest: true,
+        },
+    });
+
+    return result;
+};
+
 export const paymentService = {
     createPaymentIntoDB,
+    confirmPaymentIntoDB,
+    getMyPaymentsFromDB,
+    getSinglePaymentFromDB
 };
