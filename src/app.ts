@@ -9,6 +9,8 @@ import { categoryRoutes } from "./modules/category/category.route";
 import { rentalRoutes } from "./modules/rental/rental.route";
 import { reviewRoutes } from "./modules/review/review.route";
 import { paymentRoutes } from "./modules/payment/payment.routes";
+import globalErrorHandler from "./middlewares/globalErrorHandler";
+import notFound from "./middlewares/notFound";
 
 const app: Application = express() ;
 
@@ -34,8 +36,16 @@ app.use("/api", paymentRoutes);
 
 
 
-app.get("/", (req: Request, res: Response)=> {
-   res.send("Hello World!")
-})
+app.get("/", (req: Request, res: Response) => {
+    res.status(200).json({
+        success: true,
+        statusCode: 200,
+        message: "Welcome to the RentNest API! The server is running successfully.",
+    });
+});
+
+app.use(notFound);
+app.use(globalErrorHandler);
+
 
 export default app;

@@ -10,6 +10,10 @@ const registerUserIntoDB = async (payload: IUserRegister) => {
     console.log("Prisma.user:", prisma.user);
 
 
+    if (role === "ADMIN") {
+        throw new Error("Admin registration is not allowed");
+    } 
+    
     const isUserExist = await prisma.user.findUnique({
         where: {
             email,
